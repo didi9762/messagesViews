@@ -27,7 +27,9 @@ const GraphLine = ({listViews}:params)=>{
         return Math.min(fixedHeight, dynamicHeight);
     };
     
+    const isSmallScreen = window.innerWidth>=400
 
+  const componentWidth = isSmallScreen ? '90%' : (listViews.length < 20 ? 400 : listViews.length * 20);
   return (
     <Box width={'90%'} borderRadius={5} sx={{  boxShadow: '0px 4px 4px rgba(0.1, 0.1, 0, 0.3)'}} padding={2}>
         <Typography textAlign={'center'} variant="h4">כמות הצפיות עד לרגע זה</Typography>
@@ -43,7 +45,7 @@ const GraphLine = ({listViews}:params)=>{
       '&::-webkit-scrollbar-thumb:hover': {
         background: '#555',
       },}} width={'100%'} >
-    <Box  width={listViews.length<20?400:listViews.length*20}  display={'flex'} flexDirection={'column'} alignItems={'center'}>
+    <Box  width={componentWidth}  display={'flex'} flexDirection={'column'} alignItems={'center'}>
     <LineChart
     xAxis={[{scaleType:'band',data:xLentgh,min:20}]}
     yAxis={[{ scaleType: 'linear',max:maxNum}]}
