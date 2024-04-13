@@ -1,34 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Container,Box, Typography } from "@mui/material"
+import GraphBar from "./components/graphBar"
+import GraphLine from "./components/graphLine"
+import { useEffect,useState } from "react";
+import { getDatabase, ref, get, onValue } from "firebase/database";
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFXo_Ho0L7pB-2_FSad2nd7j32rxAf3dU",
+  authDomain: "whatsappdata-a1e14.firebaseapp.com",
+  databaseURL:
+    "https://whatsappdata-a1e14-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "whatsappdata-a1e14",
+  storageBucket: "whatsappdata-a1e14.appspot.com",
+  messagingSenderId: "141302883704",
+  appId: "1:141302883704:web:e33057844975cbe7c6d48d",
+  measurementId: "G-GFLB2JWRZY",
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  
+  const [listViews, setListViews] = useState([]);
+  const [errorNotFound, setErrorNotFoynd] = useState(false);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("iaddd");
+    if (id) {
+      try {
+        initializeApp(firebaseConfig);
+        async function getData() {
+          const dbRef = ref(
+            getDatabase(),
+            "messages/" +id
+          );
+          const snapShot = await get(dbRef);
+          const data = snapShot.val();
+          setListViews(data);
+
+          if (!data || !Array.isArray(data)) {
+            setErrorNotFoynd(true);
+            return;
+          }
+          if (listViews.length < 180) {
+            function listen() {
+              const dbRef = ref(getDatabase(), "messages/" + id);
+              onValue(dbRef, (snapShot:any) => {
+                setListViews(snapShot.val());
+              });
+            }
+            listen()
+          }
+        }
+        getData();
+      } catch (e) {
+        console.log("error try fetch data:", e);
+      }
+    } else {
+      setErrorNotFoynd(true);
+    }
+  }, []);
+
+
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+   <Container sx={{height:'100%'}} >
+   {!errorNotFound?<Box width={'100%'} height={'100%'}  display={'flex'} flexDirection={'column'} alignItems={'center'}>
+    <Typography sx={{mb:10}} variant="h3">מעקב צפיות מאז פרסום</Typography>
+    <GraphLine listViews={listViews}/>
+    <GraphBar listViews={listViews}/>
+    </Box>:
+    <Box>
+      <Typography>
+        404 NOT FOUND
+      </Typography>
+      </Box>}
+
+   </Container>
   )
 }
 
