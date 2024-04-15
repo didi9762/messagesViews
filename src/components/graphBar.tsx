@@ -14,7 +14,7 @@ const [data,setData] = useState<Array<number>>([])
   useEffect(()=>{
     let oldNum = 0
     const viewsProgress = listViews.map((viewsNum)=>{
-        const different = viewsNum-oldNum+1
+        const different = viewsNum-oldNum
         oldNum = viewsNum
         return(different)
     })

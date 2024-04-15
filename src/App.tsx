@@ -65,7 +65,7 @@ function App() {
   return (
    <Container sx={{height:'100%'}} >
    {!errorNotFound?<Box width={'100%'} height={'100%'}  display={'flex'} flexDirection={'column'} alignItems={'center'}>
-    <Typography sx={{mb:10}} variant="h3">מעקב צפיות מאז פרסום</Typography>
+    <Typography sx={{mb:10}} textAlign={'center'} variant="h3">מעקב צפיות מאז פרסום</Typography>
     <GraphLine listViews={listViews}/>
     <GraphBar listViews={listViews}/>
     </Box>:
